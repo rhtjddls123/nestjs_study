@@ -9,7 +9,7 @@ Content-Type: application/json
 }
 
 ### Find user
-GET http://localhost:3000/auth/1
+GET http://localhost:3000/auth/3
 
 ### Find user
 GET http://localhost:3000/auth?email=5@gmail.com
@@ -19,8 +19,8 @@ PATCH http://localhost:3000/auth/3
 Content-Type: application/json
 
 {
-  "email": "aaa@gmail.com"
+  "password": "aaa@gmail.com"
 }
 
 ### Delete user
-DELETE http://localhost:3000/auth/1
+DELETE http://localhost:3000/auth/4
