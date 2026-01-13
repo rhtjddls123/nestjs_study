@@ -4,15 +4,25 @@ POST http://localhost:3000/auth/signup
 Content-Type: application/json
 
 {
-  "email": "3@gmail.com",
+  "email": "32@gmail.com",
   "password": "123"
 }
+
+### Signin user
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+  "email": "32@gmail.com",
+  "password": "123"
+}
+
 
 ### Find user
 GET http://localhost:3000/auth/3
 
 ### Find user
-GET http://localhost:3000/auth?email=5@gmail.com
+GET http://localhost:3000/auth?email=aaa@gmail.com
 
 ### Update user
 PATCH http://localhost:3000/auth/3
