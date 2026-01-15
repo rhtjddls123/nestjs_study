@@ -14,7 +14,10 @@ export class UsersService {
     return this.repo.save(user);
   }
 
-  findOne(id: number) {
+  findOne(id?: number | null) {
+    if (!id) {
+      throw new NotFoundException('user not found');
+    }
     const user = this.repo.findOneBy({ id });
 
     return user;
