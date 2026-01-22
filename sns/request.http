@@ -2,24 +2,27 @@
 GET http://localhost:3000/posts
 
 ### 특정 id에 해당하는 게시물 가져오기
-GET http://localhost:3000/posts/5
+GET http://localhost:3000/posts/2
 
 ### 새로운 포스트 만들기
 POST http://localhost:3000/posts
 Content-Type: application/json
 
 {
-  "author" : "새로운 유저",
-  "title" : "새로운 게시글",
-  "content" : "새로운 게시글 내용"
+  "author" : "새로운 유저4",
+  "title" : "새로운 게시글4",
+  "content" : "새로운 게시글 내용4"
 }
 
 ### 포스트 수정하기
-PATCH  http://localhost:3000/posts/1
+PATCH http://localhost:3000/posts/4
 Content-Type: application/json
 
 {
-  "author" : "",
-  "title" : "",
+  "title" : "2",
+  "author" : {},
   "content" : "22"
 }
+
+### 포스트 삭제하기
+DELETE http://localhost:3000/posts/1
