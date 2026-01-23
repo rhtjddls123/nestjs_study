@@ -1,0 +1,26 @@
+###
+GET http://localhost:3000/users
+
+### 
+POST http://localhost:3000/users
+
+###
+PATCH http://localhost:3000/users/10
+
+### 
+POST http://localhost:3000/users/profile
+
+###
+DELETE http://localhost:3000/user/profile/4
+
+### 
+POST http://localhost:3000/users/post
+
+### 
+GET http://localhost:3000/posts
+
+### 
+GET http://localhost:3000/tags
+
+### 
+POST http://localhost:3000/posts/tags
