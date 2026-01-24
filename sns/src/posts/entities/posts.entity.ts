@@ -1,17 +1,9 @@
+import { BaseModel } from 'src/common/entiies/base.entity';
 import { UsersModel } from 'src/users/entities/users.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity()
-export class PostsModel {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class PostsModel extends BaseModel {
   // 1) UsersModel과 연동한다 FK를 이용해서
   // 2) null이 될 수 없다.
   @ManyToOne(() => UsersModel, (user) => user.posts, { nullable: false })

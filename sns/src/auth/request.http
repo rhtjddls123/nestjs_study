@@ -20,3 +20,11 @@ Authorization: Basic ampqazA2MDUxMkBuYXZlci5jb206cGFzc3dvcmQxMjMxMjM=
 #   "email": "jjjk0605@naver.com",
 #   "password": "password123123"
 # }
+
+### 액세스 토큰 재발급
+POST http://localhost:3000/auth/token/access
+Authorization: Bearer eyJhbG2ciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpqamswNjA1MTJAbmF2ZXIuY29tIiwic3ViIjo0LCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTc2OTI2MjUwMiwiZXhwIjoxNzY5MjY2MTAyfQ.lgJ04Hz_MWcciLwRbFd6mnXluVEe2aVVJq3VjFMyDeE
+
+### 리프레쉬 토큰 재발급
+POST http://localhost:3000/auth/token/refresh
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpqamswNjA1MTJAbmF2ZXIuY29tIiwic3ViIjo0LCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTc2OTI2MDAxMSwiZXhwIjoxNzY5MjYwMDEyfQ.flkVwTcsBMSEOyE4AFwWRT6bJZ5Vg7jBsxDmfdFFmFE
