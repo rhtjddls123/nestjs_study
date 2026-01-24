@@ -9,18 +9,18 @@ POST http://localhost:3000/posts
 Content-Type: application/json
 
 {
-  "author" : "새로운 유저4",
+  "author" : 1,
   "title" : "새로운 게시글4",
   "content" : "새로운 게시글 내용4"
 }
 
 ### 포스트 수정하기
-PATCH http://localhost:3000/posts/4
+PATCH http://localhost:3000/posts/1
 Content-Type: application/json
 
 {
   "title" : "2",
-  "author" : {},
+  "author" : 1,
   "content" : "22"
 }
 

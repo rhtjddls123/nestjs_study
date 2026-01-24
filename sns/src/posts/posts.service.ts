@@ -11,11 +11,16 @@ export class PostsService {
   ) {}
 
   async getAllPosts() {
-    return this.postsRepository.find();
+    return this.postsRepository.find({
+      relations: { author: true },
+    });
   }
 
   async getPostById(id: number) {
-    const post = await this.postsRepository.findOneBy({ id });
+    const post = await this.postsRepository.findOne({
+      where: { id },
+      relations: { author: true },
+    });
 
     if (!post) throw new NotFoundException('게시물을 찾을 수 없습니다.');
 
