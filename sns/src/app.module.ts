@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PostsModel } from './posts/entities/posts.entity';
 import { UsersModule } from './users/users.module';
 import { UsersModel } from './users/entities/users.entity';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     PostsModule,
@@ -21,6 +22,7 @@ import { UsersModel } from './users/entities/users.entity';
       synchronize: true, // 개발환경에서만 true 배포시 false
     }),
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

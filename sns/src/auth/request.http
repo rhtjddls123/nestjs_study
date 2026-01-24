@@ -1,0 +1,22 @@
+### 회원가입
+POST http://localhost:3000/auth/register/email
+Content-Type: application/json
+
+{
+  "email": "jjjk060512@naver.com",
+  "password": "password123123",
+  "nickname": "koseongin2"
+}
+
+### 로그인
+POST http://localhost:3000/auth/login/email
+Authorization: Basic ampqazA2MDUxMkBuYXZlci5jb206cGFzc3dvcmQxMjMxMjM=
+
+# ### 로그인
+# POST http://localhost:3000/auth/login/email
+# Content-Type: application/json
+
+# {
+#   "email": "jjjk0605@naver.com",
+#   "password": "password123123"
+# }
