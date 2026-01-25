@@ -138,6 +138,10 @@ export class AuthService {
    * 3) type: 'access' | 'refresh'
    */
   signToken(user: Pick<UsersModel, 'email' | 'id'>, isRefreshToken: boolean) {
+    if (!user?.email || !user?.id) {
+      throw new UnauthorizedException('유효하지 않은 사용자 정보입니다!');
+    }
+
     const payload = {
       email: user.email,
       sub: user.id,

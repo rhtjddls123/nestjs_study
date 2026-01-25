@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { Repository } from 'typeorm';
+import { UsersModel } from 'src/users/entities/users.entity';
 
 @Injectable()
 export class PostsService {
@@ -27,10 +28,12 @@ export class PostsService {
     return post;
   }
 
-  async createPost(body: Pick<PostsModel, 'author' | 'title' | 'content'>) {
+  async createPost(
+    body: Pick<PostsModel, 'title' | 'content'> & { author: UsersModel['id'] },
+  ) {
     const { author, title, content } = body;
     const post = this.postsRepository.create({
-      author,
+      author: { id: author },
       title,
       content,
       likeCount: 0,
