@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { Repository } from 'typeorm';
-import { UsersModel } from 'src/users/entities/users.entity';
+import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -28,14 +29,10 @@ export class PostsService {
     return post;
   }
 
-  async createPost(
-    body: Pick<PostsModel, 'title' | 'content'> & { author: UsersModel['id'] },
-  ) {
-    const { author, title, content } = body;
+  async createPost(authorId: PostsModel['id'], postDto: CreatePostDto) {
     const post = this.postsRepository.create({
-      author: { id: author },
-      title,
-      content,
+      author: { id: authorId },
+      ...postDto,
       likeCount: 0,
       commentCount: 0,
     });
@@ -45,10 +42,7 @@ export class PostsService {
     return newPost;
   }
 
-  async updatePost(
-    id: number,
-    body: Partial<Pick<PostsModel, 'author' | 'title' | 'content'>>,
-  ) {
+  async updatePost(id: number, body: UpdatePostDto) {
     const post = await this.postsRepository.preload({ id, ...body });
 
     if (!post) throw new NotFoundException('게시물을 찾을 수 없습니다.');

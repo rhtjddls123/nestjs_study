@@ -7,14 +7,14 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { PostsModel } from './entities/posts.entity';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
 import { UsersModel } from 'src/users/entities/users.entity';
+import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -39,11 +39,8 @@ export class PostsController {
   //    post를 생성한다.
   @Post()
   @UseGuards(AccessTokenGuard)
-  postPosts(
-    @Body() body: Pick<PostsModel, 'title' | 'content'>,
-    @User('id') userId: UsersModel['id'],
-  ) {
-    return this.postsService.createPost({ ...body, author: userId });
+  postPosts(@Body() body: CreatePostDto, @User('id') userId: UsersModel['id']) {
+    return this.postsService.createPost(userId, body);
   }
 
   // 4) PUT /posts/:id
@@ -52,12 +49,10 @@ export class PostsController {
   @UseGuards(AccessTokenGuard)
   patchtPost(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: Partial<Pick<PostsModel, 'title' | 'content'>>,
-    @User() user: UsersModel,
+    @Body() body: UpdatePostDto,
   ) {
     return this.postsService.updatePost(id, {
       ...body,
-      author: user,
     });
   }
 

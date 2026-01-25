@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersModel } from 'src/users/entities/users.entity';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 export interface JwtPayload {
   sub: number;
@@ -194,9 +195,7 @@ export class AuthService {
     return this.loginUser(existingUser);
   }
 
-  async registerWithEmail(
-    user: Pick<UsersModel, 'nickname' | 'email' | 'password'>,
-  ) {
+  async registerWithEmail(user: RegisterUserDto) {
     const HASH_ROUNDS = Number(process.env.HASH_ROUNDS ?? 10);
 
     const hash = await bcrypt.hash(user.password, HASH_ROUNDS);

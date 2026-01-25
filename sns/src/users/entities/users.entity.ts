@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { RolesEnum } from '../const/roles.const';
 import { PostsModel } from 'src/posts/entities/posts.entity';
 import { BaseModel } from 'src/common/entiies/base.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class UsersModel extends BaseModel {
@@ -20,6 +21,19 @@ export class UsersModel extends BaseModel {
   email: string;
 
   @Column()
+  /**
+   * Request
+   * frontent -> backend
+   * plain object (JSON) -> class instance (dto)
+   *
+   * Response
+   * backend -> frontend
+   * class instance (dto) -> plain object (JSON)
+   *
+   * toClassOnly -> class instance로 변환될때만
+   * toPlainOnly -> plain object로 변환될때만
+   */
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @Column({
