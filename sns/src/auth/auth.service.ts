@@ -4,6 +4,10 @@ import { UsersModel } from 'src/users/entities/users.entity';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto';
+import {
+  ENV_HASH_ROUNDS_KEY,
+  ENV_JWT_SECRET_KEY,
+} from 'src/common/const/env-keys.const';
 
 export interface JwtPayload {
   sub: number;
@@ -84,7 +88,7 @@ export class AuthService {
   verifyToken(token: string) {
     try {
       return this.jwtService.verify<JwtPayload>(token, {
-        secret: process.env.JWT_SECRET,
+        secret: process.env[ENV_JWT_SECRET_KEY],
       });
     } catch {
       throw new UnauthorizedException('유효하지 않거나 만료된 토큰입니다.');
@@ -150,7 +154,7 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET,
+      secret: process.env[ENV_JWT_SECRET_KEY],
       // seconds
       expiresIn: isRefreshToken ? 3600 : 300,
     });
@@ -196,7 +200,7 @@ export class AuthService {
   }
 
   async registerWithEmail(user: RegisterUserDto) {
-    const HASH_ROUNDS = Number(process.env.HASH_ROUNDS ?? 10);
+    const HASH_ROUNDS = Number(process.env[ENV_HASH_ROUNDS_KEY] ?? 10);
 
     const hash = await bcrypt.hash(user.password, HASH_ROUNDS);
 

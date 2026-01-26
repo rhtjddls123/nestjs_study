@@ -1,0 +1,6 @@
+export const ENV_DATABASE_URL_KEY = 'DATABASE_URL';
+export const ENV_DIRECT_URL_KEY = 'DIRECT_URL';
+export const ENV_JWT_SECRET_KEY = 'JWT_SECRET';
+export const ENV_HASH_ROUNDS_KEY = 'HASH_ROUNDS';
+export const ENV_PROTOCOL_KEY = 'PROTOCOL';
+export const ENV_HOST_KEY = 'HOST';

@@ -10,6 +10,7 @@ import { UsersModel } from './users/entities/users.entity';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ENV_DATABASE_URL_KEY } from './common/const/env-keys.const';
 @Module({
   imports: [
     PostsModule,
@@ -19,7 +20,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     TypeOrmModule.forRoot({
       // 데이터베이스 타입
       type: 'postgres',
-      url: process.env.DATABASE_URL,
+      url: process.env[ENV_DATABASE_URL_KEY],
       entities: [PostsModel, UsersModel],
       synchronize: true, // 개발환경에서만 true 배포시 false
     }),
