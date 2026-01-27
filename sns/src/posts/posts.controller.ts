@@ -41,7 +41,10 @@ export class PostsController {
   //    post를 생성한다.
   @Post()
   @UseGuards(AccessTokenGuard)
-  postPosts(@Body() body: CreatePostDto, @User('id') userId: UsersModel['id']) {
+  async postPosts(
+    @Body() body: CreatePostDto,
+    @User('id') userId: UsersModel['id'],
+  ) {
     return this.postsService.createPost(userId, body);
   }
 
