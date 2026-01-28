@@ -8,7 +8,9 @@ import {
   Patch,
   Post,
   Query,
+  UseFilters,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
@@ -17,6 +19,8 @@ import { UsersModel } from 'src/users/entities/users.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
+import { LogInterceptor } from 'src/common/interceptor/log.interceptor';
+import { HttpExceptionFilter } from 'src/common/exception-filter/http.exception-filter';
 
 @Controller('posts')
 export class PostsController {
@@ -56,7 +60,9 @@ export class PostsController {
    * 시작과 커밋 사이에 오류가 생기면 롤백을 통해 이전 상태로 복구한다.
    */
   @Post()
+  @UseInterceptors(LogInterceptor)
   @UseGuards(AccessTokenGuard)
+  @UseFilters(HttpExceptionFilter)
   async postPosts(
     @Body() body: CreatePostDto,
     @User('id') userId: UsersModel['id'],
