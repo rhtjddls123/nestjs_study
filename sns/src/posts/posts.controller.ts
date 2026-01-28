@@ -39,13 +39,29 @@ export class PostsController {
 
   // 3) POST /posts
   //    post를 생성한다.
+  /**
+   * A Model, B Model
+   * Post API -> A 모델을 저장하고, B 모델을 저장한다.
+   * await repository.save(a)
+   * await repository.save(b)
+   *
+   * 만약 A 모델을 저장하다가 실패하면 B 모델을 저장하면 안될 경우
+   * all or nothing
+   *
+   * transaction
+   * start -> 시작
+   * commit -> 저장
+   * rollback -> 원상복구ㅜ
+   * 모든 변경사항을 한번에 저장하는 방식으로
+   * 시작과 커밋 사이에 오류가 생기면 롤백을 통해 이전 상태로 복구한다.
+   */
   @Post()
   @UseGuards(AccessTokenGuard)
   async postPosts(
     @Body() body: CreatePostDto,
     @User('id') userId: UsersModel['id'],
   ) {
-    return this.postsService.createPost(userId, body);
+    return this.postsService.createPostWithImage(userId, body);
   }
 
   // 4) PUT /posts/:id

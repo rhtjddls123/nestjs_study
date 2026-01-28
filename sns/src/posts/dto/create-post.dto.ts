@@ -12,7 +12,9 @@ export class CreatePostDto {
   })
   content: string;
 
-  @IsString()
+  @IsString({
+    each: true,
+  })
   @IsOptional()
-  image?: string;
+  images?: string[];
 }

@@ -1,6 +1,7 @@
 import { BaseModel } from 'src/common/entiies/base.entity';
+import { ImageModel } from 'src/common/entiies/image.entity';
 import { UsersModel } from 'src/users/entities/users.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
 export class PostsModel extends BaseModel {
@@ -16,14 +17,17 @@ export class PostsModel extends BaseModel {
   @Column()
   content: string;
 
-  @Column({
-    nullable: true,
-  })
-  image?: string;
+  // @Column({
+  //   nullable: true,
+  // })
+  // image?: string;
 
   @Column()
   likeCount: number;
 
   @Column()
   commentCount: number;
+
+  @OneToMany(() => ImageModel, (images) => images.post)
+  images?: ImageModel[];
 }

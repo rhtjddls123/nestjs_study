@@ -6,6 +6,8 @@ import multer from 'multer';
 import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { SupabaseClientProvider } from './client/supabase.client';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ImageModel } from './entiies/image.entity';
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { SupabaseClientProvider } from './client/supabase.client';
       },
       storage: multer.memoryStorage(),
     }),
+    TypeOrmModule.forFeature([ImageModel]),
     UsersModule,
     AuthModule,
   ],

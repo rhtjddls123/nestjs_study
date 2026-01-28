@@ -4,9 +4,7 @@ import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { PostsModel } from './posts/entities/posts.entity';
 import { UsersModule } from './users/users.module';
-import { UsersModel } from './users/entities/users.entity';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -21,7 +19,7 @@ import { ENV_DATABASE_URL_KEY } from './common/const/env-keys.const';
       // 데이터베이스 타입
       type: 'postgres',
       url: process.env[ENV_DATABASE_URL_KEY],
-      entities: [PostsModel, UsersModel],
+      autoLoadEntities: true,
       synchronize: true, // 개발환경에서만 true 배포시 false
     }),
     UsersModule,
