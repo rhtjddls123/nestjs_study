@@ -1,7 +1,7 @@
 import {
   ConnectedSocket,
   MessageBody,
-  OnGatewayInit,
+  OnGatewayConnection,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -17,14 +17,14 @@ import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { SocketCatchHttpExceptionFilter } from 'src/common/exception-filter/socket-catch-http.exception-filter';
 import type { BearerAuthenticatedSocket } from 'src/auth/guard/socket/socket-bearer-token.guard';
 import { UsersModel } from 'src/users/entities/users.entity';
-import { AuthService, JwtPayload } from 'src/auth/auth.service';
+import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 
 @WebSocketGateway({
   // ws://localhost:3000/chats
   namespace: 'chats',
 })
-export class ChatsGateway implements OnGatewayInit {
+export class ChatsGateway implements OnGatewayConnection {
   constructor(
     private readonly chatsService: ChatsService,
     private readonly messagesService: ChatsMessagesService,
@@ -34,37 +34,38 @@ export class ChatsGateway implements OnGatewayInit {
   @WebSocketServer()
   server: Server;
 
-  afterInit(server: Server) {
-    server.use((socket: Socket & { user: UsersModel }, next) => {
-      console.log('socket 미들웨어 시작');
-
+  async handleConnection(socket: Socket & { user: UsersModel }) {
+    try {
       const auth = socket.handshake.headers.authorization;
+
       if (!auth) {
-        return next(new Error('access토큰이 존재하지 않습니다!'));
-      }
-
-      let payload: JwtPayload;
-      try {
-        const token = this.authService.extractTokenFromHeader(auth, true);
-        payload = this.authService.verifyToken(token);
-      } catch {
-        return next(new Error('토큰이 유효하지 않습니다!'));
-      }
-
-      this.usersService
-        .getUserByEmail(payload.email)
-        .then((user) => {
-          if (!user) {
-            return next(new Error('유저 정보가 존재하지 않습니다!'));
-          }
-
-          socket.user = user;
-          next();
-        })
-        .catch(() => {
-          next(new Error('토큰이 유효하지 않습니다!'));
+        socket.emit('exception', {
+          code: 'NO_TOKEN',
+          message: 'Authentication token is missing',
         });
-    });
+        return socket.disconnect();
+      }
+
+      const token = this.authService.extractTokenFromHeader(auth, true);
+      const payload = this.authService.verifyToken(token);
+
+      const user = await this.usersService.getUserByEmail(payload.email);
+      if (!user) {
+        socket.emit('exception', {
+          code: 'NO_USER',
+          message: 'User is missing',
+        });
+        return socket.disconnect();
+      }
+
+      socket.user = user;
+    } catch {
+      socket.emit('exception', {
+        code: 'INVALID_TOKEN',
+        message: 'Invalid authentication token',
+      });
+      socket.disconnect();
+    }
   }
 
   @UsePipes(new ValidationPipe({ forbidNonWhitelisted: true }))
