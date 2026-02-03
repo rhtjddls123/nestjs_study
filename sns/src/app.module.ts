@@ -16,6 +16,7 @@ import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ENV_DATABASE_URL_KEY } from './common/const/env-keys.const';
 import { LogMiddleware } from './common/middleware/log.middleware';
+import { ChatsModule } from './chats/chats.module';
 @Module({
   imports: [
     PostsModule,
@@ -32,6 +33,7 @@ import { LogMiddleware } from './common/middleware/log.middleware';
     UsersModule,
     AuthModule,
     CommonModule,
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -39,7 +39,7 @@ import { ImageModel } from './entiies/image.entity';
     AuthModule,
   ],
   controllers: [CommonController],
-  exports: [SupabaseClientProvider],
+  exports: [SupabaseClientProvider, CommonService],
   providers: [CommonService, SupabaseClientProvider],
 })
 export class CommonModule {}
