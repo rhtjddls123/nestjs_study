@@ -5,6 +5,7 @@ import { BaseModel } from 'src/common/entiies/base.entity';
 import { Exclude } from 'class-transformer';
 import { ChatsModel } from 'src/chats/entity/chats.entity';
 import { MessagesModel } from 'src/chats/messages/entity/messages.entity';
+import { CommentsModel } from 'src/posts/comments/entities/comments.entity';
 
 @Entity()
 export class UsersModel extends BaseModel {
@@ -52,4 +53,7 @@ export class UsersModel extends BaseModel {
 
   @OneToMany(() => MessagesModel, (message) => message.chat)
   messages: MessagesModel[];
+
+  @OneToMany(() => CommentsModel, (comments) => comments.author)
+  comments: CommentsModel[];
 }

@@ -2,6 +2,7 @@ import { BaseModel } from 'src/common/entiies/base.entity';
 import { ImageModel } from 'src/common/entiies/image.entity';
 import { UsersModel } from 'src/users/entities/users.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { CommentsModel } from '../comments/entities/comments.entity';
 
 @Entity()
 export class PostsModel extends BaseModel {
@@ -30,4 +31,7 @@ export class PostsModel extends BaseModel {
 
   @OneToMany(() => ImageModel, (images) => images.post)
   images?: ImageModel[];
+
+  @OneToMany(() => CommentsModel, (comments) => comments.post)
+  comments?: CommentsModel[];
 }

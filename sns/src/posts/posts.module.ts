@@ -15,5 +15,6 @@ import { ImageModel } from 'src/common/entiies/image.entity';
   ],
   controllers: [PostsController],
   providers: [PostsService],
+  exports: [PostsService],
 })
 export class PostsModule {}

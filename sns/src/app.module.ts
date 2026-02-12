@@ -17,6 +17,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ENV_DATABASE_URL_KEY } from './common/const/env-keys.const';
 import { LogMiddleware } from './common/middleware/log.middleware';
 import { ChatsModule } from './chats/chats.module';
+import { CommentsModule } from './posts/comments/comments.module';
 @Module({
   imports: [
     PostsModule,
@@ -34,6 +35,7 @@ import { ChatsModule } from './chats/chats.module';
     AuthModule,
     CommonModule,
     ChatsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [
