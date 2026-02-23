@@ -15,12 +15,12 @@ import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { User } from 'src/users/decorator/user.decorator';
 import { UsersModel } from 'src/users/entities/users.entity';
-import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { PostsModel } from '../entities/posts.entity';
 import { HttpExceptionFilter } from 'src/common/exception-filter/http.exception-filter';
 import { PaginateCommentDto } from './dto/paginate-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
+import { IsCommentMineOrAdminGuard } from './guard/is-comment-mine-or-admin.guard';
 
 @Controller('posts/:postId/comments')
 export class CommentsController {
@@ -55,6 +55,7 @@ export class CommentsController {
   }
 
   @Patch(':commentId')
+  @UseGuards(IsCommentMineOrAdminGuard)
   patchPost(
     @Param('postId', ParseIntPipe) postId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
@@ -64,6 +65,7 @@ export class CommentsController {
   }
 
   @Delete(':commentId')
+  @UseGuards(IsCommentMineOrAdminGuard)
   deletePost(
     @Param('postId', ParseIntPipe) postId: number,
     @Param('commentId', ParseIntPipe) commentId: number,

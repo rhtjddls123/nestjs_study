@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   UseFilters,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
@@ -22,6 +23,7 @@ import { HttpExceptionFilter } from 'src/common/exception-filter/http.exception-
 import { Roles } from 'src/users/decorator/roles.decorator';
 import { RolesEnum } from 'src/users/const/roles.const';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
+import { IsPostMineOrAdminGuard } from './guard/is-post-mine-or-admin.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -73,9 +75,10 @@ export class PostsController {
 
   // 4) PUT /posts/:id
   //    id에 해당되는 post를 변경한다.
-  @Patch(':id')
+  @Patch(':postId')
+  @UseGuards(IsPostMineOrAdminGuard)
   patchtPost(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('postId', ParseIntPipe) id: number,
     @Body() body: UpdatePostDto,
   ) {
     return this.postsService.updatePost(id, {
