@@ -14,7 +14,6 @@ export class ChatsController {
   }
 
   @Post('create')
-  @UseGuards(AccessTokenGuard)
   createChat(@Body() body: CreateChatDto) {
     return this.chatsService.createChat(body);
   }

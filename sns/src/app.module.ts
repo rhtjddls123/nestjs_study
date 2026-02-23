@@ -13,11 +13,13 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ENV_DATABASE_URL_KEY } from './common/const/env-keys.const';
 import { LogMiddleware } from './common/middleware/log.middleware';
 import { ChatsModule } from './chats/chats.module';
 import { CommentsModule } from './posts/comments/comments.module';
+import { RolesGuard } from './users/gurad/roles.guard';
+import { AccessTokenGuard } from './auth/guard/bearer-token.guard';
 @Module({
   imports: [
     PostsModule,
@@ -44,6 +46,8 @@ import { CommentsModule } from './posts/comments/comments.module';
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
     },
+    { provide: APP_GUARD, useClass: AccessTokenGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
 export class AppModule implements NestModule {

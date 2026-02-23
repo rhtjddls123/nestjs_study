@@ -20,12 +20,14 @@ import { PostsModel } from '../entities/posts.entity';
 import { HttpExceptionFilter } from 'src/common/exception-filter/http.exception-filter';
 import { PaginateCommentDto } from './dto/paginate-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('posts/:postId/comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Get()
+  @IsPublic()
   getComments(
     @Param('postId', ParseIntPipe) postId: number,
     @Query() body: PaginateCommentDto,
@@ -34,6 +36,7 @@ export class CommentsController {
   }
 
   @Get(':commentId')
+  @IsPublic()
   getComment(
     @Param('postId', ParseIntPipe) postId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
@@ -42,7 +45,6 @@ export class CommentsController {
   }
 
   @Post()
-  @UseGuards(AccessTokenGuard)
   @UseFilters(HttpExceptionFilter)
   postComment(
     @Body() body: CreateCommentDto,
@@ -53,7 +55,6 @@ export class CommentsController {
   }
 
   @Patch(':commentId')
-  @UseGuards(AccessTokenGuard)
   patchPost(
     @Param('postId', ParseIntPipe) postId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
@@ -63,7 +64,6 @@ export class CommentsController {
   }
 
   @Delete(':commentId')
-  @UseGuards(AccessTokenGuard)
   deletePost(
     @Param('postId', ParseIntPipe) postId: number,
     @Param('commentId', ParseIntPipe) commentId: number,

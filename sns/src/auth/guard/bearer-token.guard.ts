@@ -7,8 +7,12 @@ import {
 import { AuthService, JwtPayload } from '../auth.service';
 import { UsersService } from 'src/users/users.service';
 import { AuthenticatedRequest } from './basic-token.guard';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from 'src/common/decorator/is-public.decorator';
+import { RolesEnum } from 'src/users/const/roles.const';
 
 export interface BearerAuthenticatedRequest extends AuthenticatedRequest {
+  isRoutePublic: boolean;
   token: string;
   tokenType: JwtPayload['type'];
 }
@@ -18,10 +22,21 @@ export class BearerTokenGuard implements CanActivate {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<RolesEnum>(
+      IS_PUBLIC_KEY,
+      [context.getHandler(), context.getClass()],
+    );
     const req = context.switchToHttp().getRequest<BearerAuthenticatedRequest>();
+
+    if (isPublic) {
+      req.isRoutePublic = true;
+      return true;
+    }
+
     const rawToken = req.headers['authorization'];
 
     if (!rawToken) {
@@ -60,6 +75,10 @@ export class AccessTokenGuard extends BearerTokenGuard {
 
     const req = context.switchToHttp().getRequest<BearerAuthenticatedRequest>();
 
+    if (req.isRoutePublic) {
+      return true;
+    }
+
     if (req.tokenType !== 'access') {
       throw new UnauthorizedException('Access Token이 아닙니다.');
     }
@@ -74,6 +93,10 @@ export class RefreshTokenGuard extends BearerTokenGuard {
     await super.canActivate(context);
 
     const req = context.switchToHttp().getRequest<BearerAuthenticatedRequest>();
+
+    if (req.isRoutePublic) {
+      return true;
+    }
 
     if (req.tokenType !== 'refresh') {
       throw new UnauthorizedException('refresh Token이 아닙니다.');

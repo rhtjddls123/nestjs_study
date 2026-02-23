@@ -17,7 +17,6 @@ export class CommonController {
 
   @Post('image')
   @UseInterceptors(FileInterceptor('image'))
-  @UseGuards(AccessTokenGuard)
   async postImage(
     @UploadedFile() file: Express.Multer.File,
     @User('email') email: UsersModel['email'],

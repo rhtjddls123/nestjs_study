@@ -9,11 +9,9 @@ import {
   Post,
   Query,
   UseFilters,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
 import { UsersModel } from 'src/users/entities/users.entity';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -21,6 +19,9 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
 import { LogInterceptor } from 'src/common/interceptor/log.interceptor';
 import { HttpExceptionFilter } from 'src/common/exception-filter/http.exception-filter';
+import { Roles } from 'src/users/decorator/roles.decorator';
+import { RolesEnum } from 'src/users/const/roles.const';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -29,6 +30,7 @@ export class PostsController {
   // 1) GET /posts
   //    모든 post를 다 가져온다.
   @Get()
+  @IsPublic()
   getPosts(@Query() body: PaginatePostDto) {
     return this.postsService.paginatePosts(body);
   }
@@ -55,13 +57,12 @@ export class PostsController {
    * transaction
    * start -> 시작
    * commit -> 저장
-   * rollback -> 원상복구ㅜ
+   * rollback -> 원상복구
    * 모든 변경사항을 한번에 저장하는 방식으로
    * 시작과 커밋 사이에 오류가 생기면 롤백을 통해 이전 상태로 복구한다.
    */
   @Post()
   @UseInterceptors(LogInterceptor)
-  @UseGuards(AccessTokenGuard)
   @UseFilters(HttpExceptionFilter)
   async postPosts(
     @Body() body: CreatePostDto,
@@ -73,7 +74,6 @@ export class PostsController {
   // 4) PUT /posts/:id
   //    id에 해당되는 post를 변경한다.
   @Patch(':id')
-  @UseGuards(AccessTokenGuard)
   patchtPost(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdatePostDto,
@@ -86,6 +86,7 @@ export class PostsController {
   // 5) DELETE /posts/:id
   //    id에 해당되는 post를 삭제한다.
   @Delete(':id')
+  @Roles(RolesEnum.ADMIN)
   deletePost(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.deletePost(id);
   }
