@@ -20,6 +20,7 @@ import { ChatsModule } from './chats/chats.module';
 import { CommentsModule } from './posts/comments/comments.module';
 import { RolesGuard } from './users/gurad/roles.guard';
 import { AccessTokenGuard } from './auth/guard/bearer-token.guard';
+import { UserFollowersModel } from './users/entities/user-followers.entity';
 @Module({
   imports: [
     PostsModule,
@@ -38,6 +39,7 @@ import { AccessTokenGuard } from './auth/guard/bearer-token.guard';
     CommonModule,
     ChatsModule,
     CommentsModule,
+    UserFollowersModel,
   ],
   controllers: [AppController],
   providers: [
