@@ -1,7 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentsModel } from './entities/comments.entity';
-import { FindOptionsWhere, LessThan, MoreThan, Repository } from 'typeorm';
+import {
+  DataSource,
+  EntityManager,
+  FindOptionsWhere,
+  LessThan,
+  MoreThan,
+  Repository,
+} from 'typeorm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { PaginateCommentDto } from './dto/paginate-comment.dto';
 import { DEFAULT_COMMENT_FIND_OPTIONS } from './const/default-comment-find-options.const';
@@ -10,12 +17,15 @@ import {
   ENV_PROTOCOL_KEY,
 } from 'src/common/const/env-keys.const';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { PostsService } from '../posts.service';
 
 @Injectable()
 export class CommentsService {
   constructor(
     @InjectRepository(CommentsModel)
     private readonly commentsRepository: Repository<CommentsModel>,
+    private readonly postsService: PostsService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async getAllComments(postId: number) {
@@ -109,17 +119,32 @@ export class CommentsService {
     authorId: CommentsModel['author']['id'],
     postId: CommentsModel['post']['id'],
     dto: CreateCommentDto,
+    manager?: EntityManager,
   ) {
-    const comment = this.commentsRepository.create({
+    const commentsRepository = manager
+      ? manager.getRepository(CommentsModel)
+      : this.commentsRepository;
+
+    const comment = commentsRepository.create({
       author: { id: authorId },
       comment: dto.comment,
       likeCount: 0,
       post: { id: postId },
     });
-
-    const newComment = await this.commentsRepository.save(comment);
+    const newComment = await commentsRepository.save(comment);
 
     return newComment;
+  }
+
+  async createCommentWithIncrement(
+    authorId: CommentsModel['author']['id'],
+    postId: CommentsModel['post']['id'],
+    dto: CreateCommentDto,
+  ) {
+    return this.dataSource.transaction(async (manager) => {
+      await this.createComment(authorId, postId, dto, manager);
+      await this.postsService.incrementComment(postId, manager);
+    });
   }
 
   async updateComment(
@@ -139,17 +164,33 @@ export class CommentsService {
     return await this.commentsRepository.save(comment);
   }
 
-  async deleteComment(postId: number, commentId: number) {
-    const comment = await this.commentsRepository.findOneBy({
+  async deleteComment(
+    postId: number,
+    commentId: number,
+    manager?: EntityManager,
+  ) {
+    const commentsRepository = manager
+      ? manager.getRepository(CommentsModel)
+      : this.commentsRepository;
+    const comment = await commentsRepository.findOneBy({
       id: commentId,
       post: { id: postId },
     });
 
     if (!comment) throw new NotFoundException('댓글을 찾을 수 없습니다.');
 
-    await this.commentsRepository.remove(comment);
-
+    await commentsRepository.remove(comment);
     return commentId;
+  }
+
+  async deleteCommentWithDecrement(
+    postId: CommentsModel['post']['id'],
+    commentId: number,
+  ) {
+    return this.dataSource.transaction(async (manager) => {
+      await this.deleteComment(postId, commentId, manager);
+      await this.postsService.decrementComment(postId, manager);
+    });
   }
 
   async isCommentMine(userId: number, commentId: number) {

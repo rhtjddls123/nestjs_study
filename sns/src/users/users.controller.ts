@@ -50,7 +50,7 @@ export class UsersController {
     @User() user: UsersModel,
     @Param('id', ParseIntPipe) followerId: number,
   ) {
-    await this.usersService.confirmFollow(followerId, user.id);
+    await this.usersService.confirmFollowWithIncrement(followerId, user.id);
 
     return true;
   }
@@ -60,7 +60,7 @@ export class UsersController {
     @User() user: UsersModel,
     @Param('id', ParseIntPipe) followeeId: number,
   ) {
-    await this.usersService.deleteFollow(user.id, followeeId);
+    await this.usersService.deleteFollowWithDecrement(user.id, followeeId);
 
     return true;
   }

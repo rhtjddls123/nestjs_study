@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersModel } from './entities/users.entity';
-import { Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { UserFollowersModel } from './entities/user-followers.entity';
 
 @Injectable()
@@ -15,6 +15,7 @@ export class UsersService {
     private readonly usersRepository: Repository<UsersModel>,
     @InjectRepository(UserFollowersModel)
     private readonly userFollowersRepository: Repository<UserFollowersModel>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async createUser(user: Pick<UsersModel, 'email' | 'nickname' | 'password'>) {
@@ -120,8 +121,23 @@ export class UsersService {
     }));
   }
 
-  async confirmFollow(followerId: number, followeeId: number) {
-    const existing = await this.userFollowersRepository.findOne({
+  async confirmFollowWithIncrement(followerId: number, followeeId: number) {
+    return this.dataSource.transaction(async (manager) => {
+      await this.confirmFollow(followerId, followeeId, manager);
+      await this.incrementFollowCount(followeeId, manager);
+    });
+  }
+
+  async confirmFollow(
+    followerId: number,
+    followeeId: number,
+    manager?: EntityManager,
+  ) {
+    const repository = manager
+      ? manager.getRepository(UserFollowersModel)
+      : this.userFollowersRepository;
+
+    const existing = await repository.findOne({
       where: {
         follower: {
           id: followerId,
@@ -138,18 +154,48 @@ export class UsersService {
       throw new BadRequestException('존재하지 않는 팔로우 요청입니다.');
     }
 
-    await this.userFollowersRepository.save({
+    await repository.save({
       ...existing,
       isConfirmed: true,
     });
   }
 
-  async deleteFollow(followerId: number, followeeId: number) {
-    await this.userFollowersRepository.delete({
+  async deleteFollowWithDecrement(followerId: number, followeeId: number) {
+    return this.dataSource.transaction(async (manager) => {
+      await this.deleteFollow(followerId, followeeId, manager);
+      await this.decrementFollowCount(followerId, manager);
+    });
+  }
+
+  async deleteFollow(
+    followerId: number,
+    followeeId: number,
+    manager?: EntityManager,
+  ) {
+    const repository = manager
+      ? manager.getRepository(UserFollowersModel)
+      : this.userFollowersRepository;
+    await repository.delete({
       follower: { id: followerId },
       followee: { id: followeeId },
     });
 
     return true;
+  }
+
+  async incrementFollowCount(userId: number, manager?: EntityManager) {
+    const usersRepository = manager
+      ? manager.getRepository(UsersModel)
+      : this.usersRepository;
+
+    await usersRepository.increment({ id: userId }, 'followerCount', 1);
+  }
+
+  async decrementFollowCount(userId: number, manager?: EntityManager) {
+    const usersRepository = manager
+      ? manager.getRepository(UsersModel)
+      : this.usersRepository;
+
+    await usersRepository.decrement({ id: userId }, 'followerCount', 1);
   }
 }

@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PostsModel } from './entities/posts.entity';
 import {
   DataSource,
+  EntityManager,
   FindOptionsWhere,
   LessThan,
   MoreThan,
@@ -257,5 +258,21 @@ export class PostsService {
       where: { id: postId, author: { id: userId } },
       relations: { author: true },
     });
+  }
+
+  async incrementComment(postId: number, manager?: EntityManager) {
+    const postsRepository = manager
+      ? manager.getRepository(PostsModel)
+      : this.postsRepository;
+
+    await postsRepository.increment({ id: postId }, 'commentCount', 1);
+  }
+
+  async decrementComment(postId: number, manager?: EntityManager) {
+    const postsRepository = manager
+      ? manager.getRepository(PostsModel)
+      : this.postsRepository;
+
+    await postsRepository.decrement({ id: postId }, 'commentCount', 1);
   }
 }

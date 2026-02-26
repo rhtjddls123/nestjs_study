@@ -51,7 +51,11 @@ export class CommentsController {
     @User('id') userId: UsersModel['id'],
     @Param('postId', ParseIntPipe) postId: PostsModel['id'],
   ) {
-    return this.commentsService.createComment(userId, postId, body);
+    return this.commentsService.createCommentWithIncrement(
+      userId,
+      postId,
+      body,
+    );
   }
 
   @Patch(':commentId')
@@ -70,6 +74,6 @@ export class CommentsController {
     @Param('postId', ParseIntPipe) postId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
   ) {
-    return this.commentsService.deleteComment(postId, commentId);
+    return this.commentsService.deleteCommentWithDecrement(postId, commentId);
   }
 }
